@@ -333,6 +333,65 @@ Only positive kicks at one location were tested.
 
 ---
 
+## 9. Addendum — The first attempt to make a connection learn
+
+*Sol / ChatGPT, 15 November 2026. Follow-up to experiments 001–005. Fable's preceding paper and its independent re-run remain unchanged above.*
+
+The sixth open question in section 8 was whether the physical network could learn which of its own histories were useful, rather than leaving its graph fixed and training only an outside reader. The next test took one cautious step: insert a **trainable gain** on C's return path to the shared wave field.
+
+The work is in [PerceptionLabAI — experiment 006](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/006_reward_selected_return); full [first receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/006_reward_selected_return.json).
+
+### 9.1 What changed in the physical system
+
+The original A and B loops remain. C is another fade-triggered unit, and its pulse previously travelled through a constant-weight edge to the field. We replaced that **one edge** with [PlasticReturnGateNode](https://github.com/anttiluode/PerceptionLabAI/blob/main/nodes/plastic_return_gate_node.py):
+
+C's pulse → **bounded gain** → the wave field.
+
+The gate holds its weight between experiences, and its emitted pulse is scaled by that weight. During training it evaluates slightly stronger and slightly weaker connections on matched AB/BA input sequences. An **external, label-aware evaluator** scores the frozen readout and supplies a scalar reward *difference* through a real node input. The node then updates its retained weight.
+
+This is genuine parameter plasticity **inside the physical graph**, but the task and reward are supplied from outside. It is not autonomous valuation, learned physiology, Hebbian plasticity, or the growth of dendrites.
+
+The two-sided update was
+
+```math
+w_{n+1}
+=\operatorname{clip}_{[0,1]}\!\left(
+w_n + \eta\,
+\frac{R_n(w_n+\delta)-R_n(w_n-\delta)}{2\delta}
+\right).
+```
+
+There was no built-in resource penalty pushing the weight toward zero.
+
+### 9.2 Two tests, two negative results
+
+| Test and held-out split | Learned C weight | Learned order readout | Frozen C return | Permanently pruned C return |
+|---|---:|---:|---:|---:|
+| **006:** first two-sided reward rule | 0.848 | **6/16** | **14/16** (w=0.50) | **14/16** (w=0) |
+| **006b:** slower updates, capped at 0.05 and averaged over two contexts | 0.420 | **8/16** | **10/16** (w=0.50) | **14/16** (w=0) |
+
+The two rows use **different, disjoint final-test contexts**. They must not be pooled as if they were repeated samples of one identical test. All four conditions within a row use the same physical gate and its extra one-frame delay.
+
+In 006 the first reward comparison jumped from w=0.50 straight to w=1.00; seven further comparisons left it close to saturation. The resulting weight **hurt** unseen order recognition. The complete [weight trajectory](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/006_reward_selected_return.json) is retained.
+
+The separate, explicitly **post-hoc** [006b follow-up](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/006b_bounded_selection) limited each update to 0.05 and compared two input contexts at a time. It moved from w=0.50 to w=0.420 without saturating, but still failed the generalization comparison. [Complete 006b receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/006b_bounded_selection.json).
+
+**Verdict:** a connection can learn a *new number* without learning the *right thing to keep*. That distinction is now experimentally visible. Neither test demonstrated that reward-shaped feedback beat a frozen or pruned control.
+
+### 9.3 The vine question survives the failed rule
+
+The [vine observation that prompted the analogy](https://www.youtube.com/watch?v=gdCdY2nkG5I) was about branches exploring, coiling around supports, and sometimes being abandoned. That is a problem of **growth, local sensing, resource allocation and persistent structure**.
+
+Our gate does **none** of those things. It does not grow branches, move an aperture, create an edge, or generate its own notion of usefulness. It adjusts one scalar in response to an externally provided task reward. The failed tests argue against confusing these two achievements.
+
+A next honest test must ask whether delayed local consequences can tell a branch that its continued existence helps future computation. It must compare learned structure with the best **fixed** graph on untouched contexts and keep an explicit cost for maintaining unnecessary branches.
+
+The nail on the wall is therefore not “the network learned.” It is:
+
+> **Fading histories and recurrent pings give us a temporal substrate. Plastic connections give us the ability to change it. We still lack a reliable rule that makes those changes useful.**
+
+---
+
 ## References
 
 - Martin-Burgos B., Juavinett A., Rivière P. D., Hammonds R., Voytek B. (2026). *Action potential waveforms are state-dependent.* bioRxiv. doi:10.64898/2026.09.15.751814
