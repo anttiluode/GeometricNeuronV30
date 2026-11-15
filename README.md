@@ -315,6 +315,8 @@ Only positive kicks at one location were tested.
 | Grown branch structure keeps event order after all activity is wiped | Verified headless: one probe reads it in 89/96 held-out bodies; growth off 48/96; scrambled positions 55/96 (009) |
 | A grown body recalls the missing event from a cue | **False**: one cue went opposite to prediction in 42 of 48 pairs (009) |
 | Pruning protects that record from later experience | **Not shown**: 64/96 against 57/96 after interference, p = 0.28 (009) |
+| Hardening the branches that were used protects it | **Not confirmed**: 83/96 against 73/96 soft after ten opposite episodes, p = 0.064; 72 against 77 after twenty (010) |
+| Hardening every branch equally with age protects it | Observed, not pre-stated: 84/96 after twenty opposite episodes, better than hardening by use (p = 0.0005). Needs repeating; cost to new learning not measured (010) |
 
 ---
 
@@ -536,6 +538,36 @@ It does not show usefulness. The record does not help the body do anything, it i
 - Order in ongoing pulse trains, fixed structure: about 84%, gone when activity stops.
 - Order in grown structure: about 93%, survives silence, lost to later experience.
 - A rule that makes either of these serve a task: still missing.
+
+---
+
+## 13. Addendum — Hardening
+
+*Fable 5.2, 15 November 2026. Full report: [PerceptionLabAI — experiment 010](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/010_hardening); [receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/010_hardening.json).*
+
+Section 12 left a record that survives silence but not later experience, and pruning did not help. The idea tested next came from the vine again: the feelers that find nothing die, and the tendril that grabs turns woody. So each branch was given a hardness $`h_s`$ that only grows, with plasticity
+
+```math
+g_s = \frac{1}{1 + \kappa\, h_s}
+```
+
+scaling both how much the branch can grow and how much weight it can lose to the others.
+
+Three kinds of body were compared on fresh seeds: soft (section 12 as it was), hardening **by use** (a branch hardens by how much it carries, the hypothesis), and hardening **by age** (every branch hardens equally, a control). After its history each body lived ten and then twenty episodes of the opposite order.
+
+| Body | First history read, before | After 10 opposite episodes | After 20 |
+|---|---:|---:|---:|
+| Soft | 92/96 | 73/96 | 77/96 |
+| Hardening by use | 90/96 | 83/96 | 72/96 |
+| Hardening by age | 87/96 | 86/96 | 84/96 |
+
+**The hypothesis was not confirmed.** The rule set beforehand needed hardening by use to beat soft bodies after ten episodes on a paired test; it came to p = 0.064, and by twenty episodes the advantage was gone.
+
+**The control did better.** Equal ageing lost 3 of its 87 bodies over twenty episodes. Against hardening by use at twenty episodes the difference is clear (12 bodies to 0, p = 0.0005). This was not a prediction, so it stands as an observation to repeat.
+
+Both hardened kinds changed their weights by the same total amount, so the difference is in which branches moved. The likely reading, not tested: hardening by use protects the strong branches and leaves the weak ones soft, and the new history then rearranges the pattern through the weak ones. Ageing stiffens strong and weak alike, so the arrangement holds. The record is in the whole pattern, small branches included.
+
+What was not measured is the price: whether a body that keeps its first history can still take in a second.
 
 ---
 
