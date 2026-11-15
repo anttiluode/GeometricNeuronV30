@@ -312,6 +312,9 @@ Only positive kicks at one location were tested.
 | Feedback improves order memory at unlimited precision | **False** in this model: passive 16/16 |
 | More active units give more memory | Not shown. The 16-run result (10/16 against 15/16) did not hold up at 96 runs: 81/96 with the third return, 85/96 without, not distinguishable (008) |
 | A self-tuned network holds order better than hand-set weights | **False**: 60/96 against 81/96 held-out, paired p = 0.0003 (008) |
+| Grown branch structure keeps event order after all activity is wiped | Verified headless: one probe reads it in 89/96 held-out bodies; growth off 48/96; scrambled positions 55/96 (009) |
+| A grown body recalls the missing event from a cue | **False**: one cue went opposite to prediction in 42 of 48 pairs (009) |
+| Pruning protects that record from later experience | **Not shown**: 64/96 against 57/96 after interference, p = 0.28 (009) |
 
 ---
 
@@ -485,6 +488,54 @@ The weights were still drifting when they were frozen, the reader is one linear 
 - A connection can learn what is worth remembering, by reward (section 9) or by self-tuning (this section). **Not shown; both failed.**
 
 The last line is the open problem, and it is the old one: a system that can change itself still needs a reason to change in a direction that keeps the past.
+
+---
+
+## 12. Addendum — Morphology as memory
+
+*Fable 5.2, from Sol's proposal, 15 November 2026. Full report: [PerceptionLabAI — experiment 009](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/009_morphology_as_memory); [receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/009_morphology_as_memory.json).*
+
+Sections 9 and 11 changed one number per connection and failed twice. Experiment 009 changes where a unit's output goes. The picture behind it is a vine: it sends out feelers, keeps the ones that found something and lets the rest die.
+
+Each unit gets eight candidate return branches, one per site along the field, sharing a fixed budget:
+
+```math
+w_s \leftarrow w_s + \eta\,\bigl(p_s - \bar p\bigr), \qquad p_s = \frac{e_s}{\sum_k e_k}
+```
+
+where $`e_s`$ is how busy the field has recently been at the tip of branch $`s`$. The update happens when the unit fires. Weights are then rescaled to the budget, and a branch that falls below a threshold is removed for good. The rule sees only the unit's own pulse and the field at its branch tips.
+
+A body lives through twenty episodes of A-then-B or B-then-A. Between episodes every signal is wiped, so only the branch structure carries anything forward. Decision rules were committed before the full run.
+
+### 12.1 What passed
+
+After a full wipe, one identical probe pulse was sent into each of 96 held-out bodies and a linear reader looked at the response.
+
+| Body | History read correctly |
+|---|---:|
+| Grown | 89/96 |
+| Growth switched off | 48/96 |
+| Same branches, positions scrambled | 55/96 |
+| Weights read directly (upper bound) | 91/96 |
+
+The order of past events is in the arrangement of the branches, it survives total silence, and the body's ordinary response to one pulse gives almost all of it back. This is the first positive result in the round for a change the system made to itself.
+
+### 12.2 What failed
+
+- **No recall.** The prediction was that a body grown on A-then-B would answer cue A with activity at B's place. For cue A the result was the opposite in 42 of 48 pairs. Branches grow toward the middle of the field, where the two waves overlap, not toward the partner.
+- **Pruning did not protect the record.** After ten episodes of the opposite order the first history was read in 64/96 bodies with pruning and 57/96 without (p = 0.28). Pruned bodies changed more, not less: dead branches cannot return, but the living ones keep trading weight.
+
+### 12.3 How to read it
+
+Section 3.4 described this system as lag matrices coupled by pings, with a fixed matrix. Here the matrix itself is moved by the pings, and because two changes applied in different orders do not give the same matrix, order ends up in structure. That much was close to expected: any timing-sensitive growth rule will do it. What the experiment adds is that it holds across varied histories, that position and not branch count carries it, and that it can be read through dynamics.
+
+It does not show usefulness. The record does not help the body do anything, it is overwritten by later experience, and a plain Hebbian weight matrix was not compared.
+
+### 12.4 The round, updated
+
+- Order in ongoing pulse trains, fixed structure: about 84%, gone when activity stops.
+- Order in grown structure: about 93%, survives silence, lost to later experience.
+- A rule that makes either of these serve a task: still missing.
 
 ---
 
