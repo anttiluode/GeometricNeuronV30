@@ -306,7 +306,7 @@ Only positive kicks at one location were tested.
 | Activity delays this unit and never advances it | Verified in one re-run, positive kicks only |
 | Feedback strength switches two units between suppression and turn-taking | Verified headless, single runs; GUI not yet checked |
 | In turn-taking, each unit needs the other | **Half true.** A needs B (B's return disconnected: both die). B does not need A's return (007: turn-taking continues at A weight 0.00) |
-| A return edge can reach turn-taking from its own firing rate alone | Verified headless from five starting weights (007); GUI not yet checked |
+| A return edge can reach turn-taking from its own firing rate alone | Verified headless from five starting weights (007). Seen in the GUI on the both-homeostatic graph: A weight 0.61 with B silent, later 0.36 with B at 11 pulses |
 | That rule is safe for a unit on its own | **False**: an isolated loop dies under it and does not restart (007) |
 | Order AB/BA is readable from pulse trains after the passive field is below a 1% floor | Verified headless; the floor was chosen after the fact |
 | Feedback improves order memory at unlimited precision | **False** in this model: passive 16/16 |
@@ -432,6 +432,7 @@ A fixed-weight sweep through the same gate showed that turn-taking continues wit
 
 ### 10.4 Limits
 
+- **GUI coverage is partial.** One of the five graphs (both returns self-tuning) has been watched in PerceptionLab, where field energy fell from 0.0040 to 0.0001 as B joined. The rest are headless only.
 - **An isolated loop dies.** Without B's return, A's weight falls as intended, the loop stops near weight 0.40, and nothing restarts it. A unit that cannot fire from silence cannot recover from its own caution.
 - **One planned control was uninformative.** The sign-flipped rule started at 0.30 drifted to 0.04 and turn-taking continued, because every weight from 0.00 to 0.45 takes turns.
 - **Nothing here measures memory.** The AB/BA test of experiment 005 was not run on the self-tuned system.
