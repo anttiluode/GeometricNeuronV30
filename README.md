@@ -19,7 +19,7 @@ A unit that fires **when its record of recent activity fades** was placed on a t
 2. Two units with different fade rates either **suppress** one another (the faster fader wins) or **take turns**, depending only on how strongly one of them writes back.
 3. In the turn-taking regime the fast unit cannot keep itself going alone; it depends on the slow one. (Corrected after experiment 007: the dependence is one-way. See section 10.)
 4. The order of two input pulses (A then B, or B then A) stays readable from the ongoing pulse trains long after the passive field has decayed below a stated measurement floor.
-5. Adding a third active unit made that order **harder** to read, not easier.
+5. Adding a third active unit seemed to make that order harder to read. (With six times the test runs this did not hold up. See section 11.)
 
 Nothing here is a new mechanism. It is a delayed-feedback relaxation oscillator, and the family is old. What the round adds is a controlled, reproducible ladder from "a wave carries an event" to "the past changes later pulse trains, and an outside reader can sometimes tell which past it was".
 
@@ -310,7 +310,8 @@ Only positive kicks at one location were tested.
 | That rule is safe for a unit on its own | **False**: an isolated loop dies under it and does not restart (007) |
 | Order AB/BA is readable from pulse trains after the passive field is below a 1% floor | Verified headless; the floor was chosen after the fact |
 | Feedback improves order memory at unlimited precision | **False** in this model: passive 16/16 |
-| More active units give more memory | **False** in the one configuration tested: 10/16 against 15/16 |
+| More active units give more memory | Not shown. The 16-run result (10/16 against 15/16) did not hold up at 96 runs: 81/96 with the third return, 85/96 without, not distinguishable (008) |
+| A self-tuned network holds order better than hand-set weights | **False**: 60/96 against 81/96 held-out, paired p = 0.0003 (008) |
 
 ---
 
@@ -440,6 +441,50 @@ A fixed-weight sweep through the same gate showed that turn-taking continues wit
 - **The three-unit case is untested.** Experiment 005 found a third active unit made order harder to read. Whether three self-tuning returns do better is the next test.
 
 Against the nail at the end of section 9: there is now one rule that changes a connection in a direction the system can use, without being told what useful means. It is a rule for sharing the field, not yet a rule for remembering.
+
+---
+
+## 11. Addendum — The deciding test for memory
+
+*Fable 5.2, 15 November 2026. Full report: [PerceptionLabAI — experiment 008](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/008_self_tuned_order); [receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/008_self_tuned_order.json).*
+
+Section 10 ended with a rule for sharing the field and the note that it was not yet a rule for remembering. Experiment 008 tested exactly that, with the decision rule committed before the run: self-tuning wins only if it beats the hand-set weights on a paired test.
+
+The three-unit circuit of experiment 005 was given a self-tuning gate on every return. The gates settled with no labels, the weights were frozen, and the AB/BA order test was run on 96 held-out runs (the earlier experiments used 16).
+
+| Condition | Return weights A, B, C | Correct of 96 at frame 650 |
+|---|---|---:|
+| Hand-set (experiment 005) | 0.30, 1.00, 0.50 | 81 |
+| Hand-set, third return cut | 0.30, 1.00, 0.00 | 85 |
+| **Self-tuned, frozen** | 0.22, 0.90, 0.47 | **60** |
+| Self-tuned, still learning | starts as above | 75 |
+| Passive field | 0, 0, 0 | 48 |
+
+**The self-tuned network remembers order worse** (paired sign test p = 0.0003). A small shift in the weights cost 21 runs. Two other target rates, tried as a side check, also came out below hand-set.
+
+### 11.1 A correction to section 4
+
+Experiment 005 reported that a third active unit made order harder to read: 10/16 against 15/16. At 96 runs it is 81 against 85, and the paired test cannot separate them (p = 0.48). That finding was small-sample noise, as far as this test can tell. The summary and ledger are corrected.
+
+### 11.2 Why, probably
+
+During settling, runs that began with AB and runs that began with BA ended at almost the same weights and the same firing, about 22 pulses per unit per 2,000 frames. The rule pulls every unit toward the same rate and the circuit falls into one regular rotation whatever came first.
+
+A system that always ends in the same rhythm has forgotten how it started. Self-tuning is a way of converging; remembering needs different pasts to stay apart. That tension was not measured directly here, so it stays an explanation, not a result.
+
+### 11.3 Limits
+
+The weights were still drifting when they were frozen, the reader is one linear type, and it is one deterministic circuit. None of this points toward a hidden win.
+
+### 11.4 Where the round ends
+
+- A wave field holds one event at several ages. **Shown.**
+- A unit that fires when its history fades sustains a rhythm, and is delayed by activity, never advanced. **Shown.**
+- Order of past inputs survives in the pulse trains after the passive field is unreadable. **Shown**, at about 84% on 96 runs.
+- A connection can tune itself into sharing the field, from its own firing rate alone. **Shown.**
+- A connection can learn what is worth remembering, by reward (section 9) or by self-tuning (this section). **Not shown; both failed.**
+
+The last line is the open problem, and it is the old one: a system that can change itself still needs a reason to change in a direction that keeps the past.
 
 ---
 
