@@ -17,7 +17,7 @@ A unit that fires **when its record of recent activity fades** was placed on a t
 
 1. One unit and one field make a self-sustaining rhythm from a single starting pulse, with no clock.
 2. Two units with different fade rates either **suppress** one another (the faster fader wins) or **take turns**, depending only on how strongly one of them writes back.
-3. In the turn-taking regime neither unit can keep itself going alone. The rhythm belongs to the pair.
+3. In the turn-taking regime the fast unit cannot keep itself going alone; it depends on the slow one. (Corrected after experiment 007: the dependence is one-way. See section 10.)
 4. The order of two input pulses (A then B, or B then A) stays readable from the ongoing pulse trains long after the passive field has decayed below a stated measurement floor.
 5. Adding a third active unit made that order **harder** to read, not easier.
 
@@ -197,7 +197,7 @@ Over 1,800 frames:
 | A return 0.30, sites swapped | still alternate, both at 70 frames |
 | A return 0.30, decay rates swapped | B dominates at 81 frames, A silent |
 
-In the alternating regime neither unit sustains itself. Each one's fall re-arms the other. Swapping positions kept the behaviour; swapping fade rates flipped it. What decides the outcome is the unit's temporal identity, not its place.
+In the alternating regime A does not sustain itself: with B's return disconnected both die. *Correction after experiment 007:* B does sustain itself, and turn-taking continues even with A's return at zero (section 10). The dependence is one-way. Swapping positions kept the behaviour; swapping fade rates flipped it. What decides the outcome is the unit's temporal identity, not its place.
 
 ### 005 — Can the order of falls remember AB versus BA?
 [Report](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/005_order_of_falls) · [Three-active follow-up](https://github.com/anttiluode/PerceptionLabAI/blob/main/experiments/005_order_of_falls/THREE_ACTIVE.md)
@@ -305,7 +305,9 @@ Only positive kicks at one location were tested.
 | A fade-triggered unit sustains a rhythm from one pulse, and dies without its return wire | Verified headless and in the GUI |
 | Activity delays this unit and never advances it | Verified in one re-run, positive kicks only |
 | Feedback strength switches two units between suppression and turn-taking | Verified headless, single runs; GUI not yet checked |
-| In turn-taking, each unit needs the other | Verified headless (B's return disconnected: both die) |
+| In turn-taking, each unit needs the other | **Half true.** A needs B (B's return disconnected: both die). B does not need A's return (007: turn-taking continues at A weight 0.00) |
+| A return edge can reach turn-taking from its own firing rate alone | Verified headless from five starting weights (007); GUI not yet checked |
+| That rule is safe for a unit on its own | **False**: an isolated loop dies under it and does not restart (007) |
 | Order AB/BA is readable from pulse trains after the passive field is below a 1% floor | Verified headless; the floor was chosen after the fact |
 | Feedback improves order memory at unlimited precision | **False** in this model: passive 16/16 |
 | More active units give more memory | **False** in the one configuration tested: 10/16 against 15/16 |
@@ -389,6 +391,54 @@ A next honest test must ask whether delayed local consequences can tell a branch
 The nail on the wall is therefore not “the network learned.” It is:
 
 > **Fading histories and recurrent pings give us a temporal substrate. Plastic connections give us the ability to change it. We still lack a reliable rule that makes those changes useful.**
+
+---
+
+## 10. Addendum — A return edge that tunes itself
+
+*Fable 5.2, 15 November 2026. Follow-up to section 9. Full report: [PerceptionLabAI — experiment 007](https://github.com/anttiluode/PerceptionLabAI/tree/main/experiments/007_homeostatic_return); [receipt](https://github.com/anttiluode/PerceptionLabAI/blob/main/results/007_homeostatic_return.json).*
+
+Section 9 ended without a reliable rule for changing a connection. Both attempts there used a reward computed by an outside reader that knew the labels. Experiment 007 removes the reward, the reader and the labels.
+
+A's return edge watches one thing, how often A fires, and moves its own weight toward a target rate:
+
+```math
+r_{t+1} = r_t + \frac{s_t - r_t}{\tau}, \qquad w_{t+1} = \operatorname{clip}_{[0,1]}\bigl(w_t + \eta\,(r^\ast - r_{t+1})\bigr)
+```
+
+where $`s_t`$ is 1 on a frame where A fired, $`r`$ is its running rate, $`r^\ast`$ the target and $`w`$ the return weight. Firing too often lowers the weight; firing too rarely raises it. This is firing-rate homeostasis, a long-known mechanism. The only question was whether it works here.
+
+### 10.1 Result
+
+The system is the two-unit one from experiment 004, 6,000 frames per run, zero clipped frames throughout.
+
+| Case | Final A weight | Last quarter of the run |
+|---|---:|---|
+| Homeostatic, start 1.00 | 0.41 | A and B take turns, 104 frames |
+| Frozen at 1.00 | 1.00 | A alone at 29 frames, B silent |
+| Homeostatic, start 0.75 / 0.50 / 0.30 | 0.41 / 0.42 / 0.42 | A and B take turns |
+| Homeostatic, start 0.05 (12,000 frames) | 0.41 | A and B take turns |
+| Homeostatic, **B's return disconnected** | back at 1.00 | **silent** |
+
+Starting where A silences B, the edge lowers itself, B starts firing, and the two take turns. Learning rates from 0.005 to 0.32 reach the same regime.
+
+### 10.2 What the target does
+
+With a target that turn-taking can deliver (up to about one pulse per 97 frames), the weight settles and the target sets the tempo. With a higher target the weight does not settle. It swings across the switch point near 0.45–0.50, A meets its rate on average, and B fires in the gaps: 12, 9 or 4 times per 1,500 frames as the target rises from 0.016 to 0.030. No fixed weight in the tested sweep gave such in-between ratios.
+
+### 10.3 What it corrected
+
+A fixed-weight sweep through the same gate showed that turn-taking continues with A's return at **0.00**, at 154 frames. B's loop carries the pattern and A fires in answer. A's return only speeds it up, to 97 frames at 0.45. So the statement in the first version of this paper, that neither unit can keep itself going alone, was wrong about B. It has been corrected in the summary, section 4 and the ledger.
+
+### 10.4 Limits
+
+- **An isolated loop dies.** Without B's return, A's weight falls as intended, the loop stops near weight 0.40, and nothing restarts it. A unit that cannot fire from silence cannot recover from its own caution.
+- **One planned control was uninformative.** The sign-flipped rule started at 0.30 drifted to 0.04 and turn-taking continued, because every weight from 0.00 to 0.45 takes turns.
+- **Nothing here measures memory.** The AB/BA test of experiment 005 was not run on the self-tuned system.
+- **The target is chosen by hand**, and this is two units, one geometry, one deterministic run per condition.
+- **The three-unit case is untested.** Experiment 005 found a third active unit made order harder to read. Whether three self-tuning returns do better is the next test.
+
+Against the nail at the end of section 9: there is now one rule that changes a connection in a direction the system can use, without being told what useful means. It is a rule for sharing the field, not yet a rule for remembering.
 
 ---
 
